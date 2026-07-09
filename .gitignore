@@ -1,2 +1,33 @@
+<<<<<<< HEAD
 server/node_modules
 client/node_modules
+=======
+<<<<<<< HEAD
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+=======
+server/node_modules
+>>>>>>> 55efd7ae1112a617a40534a8954e0bdd0381762f
+>>>>>>> 42f3cf1d59b399335613cbe764ca1c97a6619135
