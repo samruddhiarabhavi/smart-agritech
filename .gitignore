@@ -31,3 +31,4 @@ dist-ssr
 server/node_modules
 >>>>>>> 55efd7ae1112a617a40534a8954e0bdd0381762f
 >>>>>>> 42f3cf1d59b399335613cbe764ca1c97a6619135
+server/.env
