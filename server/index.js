@@ -1,44 +1,50 @@
 require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
-const app = express();
 const mongoose = require('mongoose');
+const Job = require('./models/Job');
+
+const app = express();
 app.use(cors());
 app.use(express.json());
+
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('MongoDB connected successfully! ✅'))
+  .catch((err) => console.log('MongoDB connection error:', err));
 
 app.get("/", (req, res) => {
   res.send("Smart agriculture platform");
 });
 
-const jobs = [
-  { id: 1, title: "Wheat Harvesting", category: "farming", wagePerDay: 400, location: "Nashik" },
-  { id: 2, title: "House Construction Helper", category: "construction", wagePerDay: 600, location: "Pune" },
-  { id: 3, title: "Household Cleaning", category: "household", wagePerDay: 300, location: "Nashik" },
-];
-
-app.get("/jobs", (req, res) => {
-  res.json(jobs);
+app.get("/jobs", async (req, res) => {
+  try {
+    const jobs = await Job.find();
+    res.json(jobs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
-app.get("/jobs/:id", (req, res) => {
-  const jobId = Number(req.params.id);
-  const job = jobs.find(j => j.id === jobId);
-  res.json(job);
+app.get("/jobs/:id", async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ error: "Job not found" });
+    res.json(job);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
+app.post("/jobs", async (req, res) => {
+  try {
+    const newJob = await Job.create(req.body);
+    res.status(201).json(newJob);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected successfully! ✅'))
-  .catch((err) => console.log('MongoDB connection error:', err));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
-async function getJobById() {
-    const response = await fetch('http://localhost:5000/jobs/1');
-    const data = await response.json()
-    console.log(data)
-  // your code here
-}
-
-getJobById();
