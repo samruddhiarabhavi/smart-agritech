@@ -3,6 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require('mongoose');
 const Job = require('./models/Job');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const User = require('./models/Users');
 
 const app = express();
 app.use(cors());
@@ -15,6 +18,23 @@ mongoose.connect(process.env.MONGO_URI)
 app.get("/", (req, res) => {
   res.send("Smart agriculture platform");
 });
+app.post("/signup", async (req,res) =>{
+  try{
+    const {name, email, password, role} = req.body;
+    const existingUser = await User.findOne({email});
+    if(existingUser){
+      return res.status(400).json({ error: "User already exists" });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
+      name, email, password: hashedPassword, role,
+    });
+    res.status(201).json({message:"User created successfully",userId:User._id});
+  }catch(err){
+    res.status(500).json({error:err.message})
+  }
+  }
+ )
 
 app.get("/jobs", async (req, res) => {
   try {
