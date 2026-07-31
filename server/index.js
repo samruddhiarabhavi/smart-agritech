@@ -6,6 +6,7 @@ const Job = require('./models/Job');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./models/Users');
+const authMiddleware = require('./middleware/auth');
 
 const app = express();
 app.use(cors());
@@ -14,6 +15,18 @@ app.use(express.json());
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('MongoDB connected successfully! ✅'))
   .catch((err) => console.log('MongoDB connection error:', err));
+
+  app.post("/jobs", authMiddleware, async (req, res) => {
+  try {
+    const newJob = await Job.create({
+      ...req.body,
+      postedBy: req.user.userId, // token inda bandidda user ID
+    });
+    res.status(201).json(newJob);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
 
 app.get("/", (req, res) => {
   res.send("Smart agriculture platform");
