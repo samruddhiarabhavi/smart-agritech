@@ -7,31 +7,34 @@ function JobForm({ onJobAdded }) {
   const [location, setLocation] = useState('');
 
   async function handleSubmit(e) {
-    e.preventDefault(); // stops the page from refreshing (default form behavior)
+  e.preventDefault();
 
-    const newJob = {
-      title,
-      category,
-      wagePerDay: Number(wagePerDay), // convert string input to number
-      location,
-    };
+  const newJob = {
+    title,
+    category,
+    wagePerDay: Number(wagePerDay),
+    location,
+  };
 
-    const response = await fetch('http://localhost:5000/jobs', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newJob),
-    });
+  const token = localStorage.getItem('token');
 
-    const savedJob = await response.json();
-    onJobAdded(savedJob); // tell the parent (App) a new job was added
+  const response = await fetch('http://localhost:5000/jobs', {
+    method: 'POST',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(newJob),
+  });
 
-    // Clear the form
-    setTitle('');
-    setCategory('');
-    setWagePerDay('');
-    setLocation('');
-  }
+  const savedJob = await response.json();
+  onJobAdded(savedJob);
 
+  setTitle('');
+  setCategory('');
+  setWagePerDay('');
+  setLocation('');
+}
   return (
     <form onSubmit={handleSubmit}>
       <input
