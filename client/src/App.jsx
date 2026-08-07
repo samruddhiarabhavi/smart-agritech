@@ -1,10 +1,22 @@
 import { useEffect, useState } from 'react';
 import JobCard from './JobCard';
 import JobForm from './JobForm';
+import LoginForm from './LoginForm';
+import SignupForm from './SignupForm';
 
 function App() {
   const [jobs, setJobs] = useState([]);
   const [searchLocation, setSearchLocation] = useState('');
+  const [user, setUser] = useState(null);
+  const [showSignup, setShowSignup] = useState(false);
+
+  // Check if user already logged in (on page load/refresh)
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+  }, []);
 
   useEffect(() => {
     async function fetchJobs() {
@@ -19,6 +31,16 @@ function App() {
     setJobs((prevJobs) => [...prevJobs, newJob]);
   }
 
+  function handleLoginSuccess(loggedInUser) {
+    setUser(loggedInUser);
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setUser(null);
+  }
+
   const filteredJobs = jobs.filter((job) =>
     job.location.toLowerCase().includes(searchLocation.toLowerCase())
   );
@@ -28,24 +50,46 @@ function App() {
       <h1>Smart Agri Tech Platform</h1>
       <p>Connecting rural workers to fair rural job providers</p>
 
-      <JobForm onJobAdded={handleJobAdded} />
+      {/* Agar user login nahi hai, toh Login/Signup dikhao */}
+      {!user ? (
+        <div>
+          {showSignup ? (
+            <>
+              <SignupForm onSignupSuccess={() => setShowSignup(false)} />
+              <p>Already have an account? <button onClick={() => setShowSignup(false)}>Login</button></p>
+            </>
+          ) : (
+            <>
+              <LoginForm onLoginSuccess={handleLoginSuccess} />
+              <p>New here? <button onClick={() => setShowSignup(true)}>Sign Up</button></p>
+            </>
+          )}
+        </div>
+      ) : (
+        <div>
+          <p>Welcome, {user.name} ({user.role})</p>
+          <button onClick={handleLogout}>Logout</button>
 
-      <input
-        type="text"
-        placeholder="Search by location"
-        value={searchLocation}
-        onChange={(e) => setSearchLocation(e.target.value)}
-      />
+          <JobForm onJobAdded={handleJobAdded} />
 
-      {filteredJobs.map((job) => (
-        <JobCard
-          key={job.id}
-          title={job.title}
-          category={job.category}
-          wagePerDay={job.wagePerDay}
-          location={job.location}
-        />
-      ))}
+          <input
+            type="text"
+            placeholder="Search by location"
+            value={searchLocation}
+            onChange={(e) => setSearchLocation(e.target.value)}
+          />
+
+          {filteredJobs.map((job) => (
+            <JobCard
+              key={job._id}
+              title={job.title}
+              category={job.category}
+              wagePerDay={job.wagePerDay}
+              location={job.location}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

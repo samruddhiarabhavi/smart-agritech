@@ -13,64 +13,23 @@ app.use(cors());
 app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB connected successfully! ✅'))
+  .then(() => console.log('MongoDB connected successfully! '))
   .catch((err) => console.log('MongoDB connection error:', err));
-
-  app.post("/jobs", authMiddleware, async (req, res) => {
-  try {
-    const newJob = await Job.create({
-      ...req.body,
-      postedBy: req.user.userId, // token inda bandidda user ID
-    });
-    res.status(201).json(newJob);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
 
 app.get("/", (req, res) => {
   res.send("Smart agriculture platform");
 });
-app.post("/signup", async (req,res) =>{
-  try{
-    const {name, email, password, role} = req.body;
-    const existingUser = await User.findOne({email});
-    if(existingUser){
-      return res.status(400).json({ error: "User already exists" });
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = await User.create({
-      name, email, password: hashedPassword, role,
-    });
-    res.status(201).json({message:"User created successfully",userId:User._id});
-  }catch(err){
-    res.status(500).json({error:err.message})
-  }
-  }
- )
- app.post("/login", async (req, res) => {
+
+//  YE ROUTE ADD KARO - GET all jobs (missing tha)
+app.get("/jobs", async (req, res) => {
   try {
-    const { email, password } = req.body;
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).json({ error: "Invalid email or password" });
-    }
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    res.json({ token, user: { name: user.name, email: user.email, role: user.role } });
+    const jobs = await Job.find();
+    res.json(jobs);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 app.get("/jobs/:id", async (req, res) => {
   try {
     const job = await Job.findById(req.params.id);
@@ -81,12 +40,55 @@ app.get("/jobs/:id", async (req, res) => {
   }
 });
 
-app.post("/jobs", async (req, res) => {
+// Sirf EK POST /jobs route rakho (authMiddleware wala)
+app.post("/jobs", authMiddleware, async (req, res) => {
   try {
-    const newJob = await Job.create(req.body);
+    const newJob = await Job.create({
+      ...req.body,
+      postedBy: req.user.userId,
+    });
     res.status(201).json(newJob);
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+app.post("/signup", async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: "User already exists" });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await User.create({
+      name, email, password: hashedPassword, role,
+    });
+    res.status(201).json({ message: "User created successfully", userId: newUser._id });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Invalid email or password" });
+    }
+    const token = jwt.sign(
+      { userId: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+    res.json({ token, user: { name: user.name, email: user.email, role: user.role } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
