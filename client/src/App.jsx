@@ -40,6 +40,21 @@ function App() {
     localStorage.removeItem('user');
     setUser(null);
   }
+  function handleDeleteJob(jobId) {
+  const token = localStorage.getItem('token');
+
+  fetch(`http://localhost:5000/jobs/${jobId}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+  })
+    .then((res) => res.json())
+    .then(() => {
+      setJobs((prevJobs) => prevJobs.filter((job) => job._id !== jobId));
+    })
+    .catch((err) => console.log(err));
+}
 
   const filteredJobs = jobs.filter((job) =>
     job.location.toLowerCase().includes(searchLocation.toLowerCase())
@@ -88,6 +103,19 @@ function App() {
               location={job.location}
             />
           ))}
+          {filteredJobs.map((job) => (
+  <JobCard
+    key={job._id}
+    id={job._id}
+    title={job.title}
+    category={job.category}
+    wagePerDay={job.wagePerDay}
+    location={job.location}
+    postedBy={job.postedBy}
+    currentUserId={JSON.parse(localStorage.getItem('user'))?.userId}
+    onDelete={handleDeleteJob}
+  />
+))}
         </div>
       )}
     </div>
