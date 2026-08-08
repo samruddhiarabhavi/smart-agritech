@@ -40,6 +40,26 @@ function App() {
     localStorage.removeItem('user');
     setUser(null);
   }
+function handleUpdateJob(jobId, updatedData) {
+  const token = localStorage.getItem('token');
+
+  fetch(`http://localhost:5000/jobs/${jobId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify(updatedData),
+  })
+    .then((res) => res.json())
+    .then((updatedJob) => {
+      setJobs((prevJobs) =>
+        prevJobs.map((job) => (job._id === jobId ? updatedJob : job))
+      );
+    })
+    .catch((err) => console.log(err));
+}
+
   function handleDeleteJob(jobId) {
   const token = localStorage.getItem('token');
 
@@ -113,6 +133,7 @@ function App() {
     location={job.location}
     postedBy={job.postedBy}
     currentUserId={JSON.parse(localStorage.getItem('user'))?.userId}
+    onUpdate={handleUpdateJob}
     onDelete={handleDeleteJob}
   />
 ))}
