@@ -20,7 +20,7 @@ function App() {
 
   useEffect(() => {
     async function fetchJobs() {
-      const response = await fetch('http://localhost:5000/jobs');
+      const response = await fetch('hhttps://smart-agritech.onrender.com/jobs');
       const data = await response.json();
       setJobs(data);
     }
@@ -43,7 +43,7 @@ function App() {
 function handleUpdateJob(jobId, updatedData) {
   const token = localStorage.getItem('token');
 
-  fetch(`http://localhost:5000/jobs/${jobId}`, {
+  fetch(`https://smart-agritech.onrender.com/${jobId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -63,7 +63,7 @@ function handleUpdateJob(jobId, updatedData) {
   function handleDeleteJob(jobId) {
   const token = localStorage.getItem('token');
 
-  fetch(`http://localhost:5000/jobs/${jobId}`, {
+  fetch(`https://smart-agritech.onrender.com/jobs/${jobId}`, {
     method: 'DELETE',
     headers: {
       'Authorization': `Bearer ${token}`,

@@ -18,7 +18,7 @@ function JobForm({ onJobAdded }) {
 
   const token = localStorage.getItem('token');
 
-  const response = await fetch('http://localhost:5000/jobs', {
+  const response = await fetch('https://smart-agritech.onrender.com/jobs', {
     method: 'POST',
     headers: { 
       'Content-Type': 'application/json',
