@@ -1,4 +1,4 @@
-# 🌾 Smart AgriTech
+#  Smart AgriTech
 
 A full-stack MERN platform connecting rural workers with local job providers — farmers, construction contractors, and households — with wage transparency to help ensure fair pay for daily and casual work.
 

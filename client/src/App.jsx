@@ -80,67 +80,72 @@ function handleUpdateJob(jobId, updatedData) {
     job.location.toLowerCase().includes(searchLocation.toLowerCase())
   );
 
-  return (
-    <div>
-      <h1>Smart Agri Tech Platform</h1>
-      <p>Connecting rural workers to fair rural job providers</p>
+return (
+  <div className="app">
+    <div className="app-header">
+      <h1>Smart AgriTech</h1>
+      <p className="tagline">Connecting rural workers to fair rural job providers</p>
+      <div className="underline"></div>
+    </div>
 
-      {/* Agar user login nahi hai, toh Login/Signup dikhao */}
-      {!user ? (
-        <div>
-          {showSignup ? (
-            <>
-              <SignupForm onSignupSuccess={() => setShowSignup(false)} />
-              <p>Already have an account? <button onClick={() => setShowSignup(false)}>Login</button></p>
-            </>
-          ) : (
-            <>
-              <LoginForm onLoginSuccess={handleLoginSuccess} />
-              <p>New here? <button onClick={() => setShowSignup(true)}>Sign Up</button></p>
-            </>
-          )}
+    {!user ? (
+      <div className="auth-card">
+        {showSignup ? (
+          <>
+            <SignupForm onSignupSuccess={() => setShowSignup(false)} />
+            <p className="auth-switch">
+              Already have an account? <button onClick={() => setShowSignup(false)}>Login</button>
+            </p>
+          </>
+        ) : (
+          <>
+            <LoginForm onLoginSuccess={handleLoginSuccess} />
+            <p className="auth-switch">
+              New here? <button onClick={() => setShowSignup(true)}>Sign Up</button>
+            </p>
+          </>
+        )}
+      </div>
+    ) : (
+      <div>
+        <div className="welcome-bar">
+          <p>Welcome, {user.name} <span className="role-tag">{user.role}</span></p>
+          <button className="btn-logout" onClick={handleLogout}>Logout</button>
         </div>
-      ) : (
-        <div>
-          <p>Welcome, {user.name} ({user.role})</p>
-          <button onClick={handleLogout}>Logout</button>
 
+        <div className="job-form">
+          <h3>Post a Job</h3>
           <JobForm onJobAdded={handleJobAdded} />
+        </div>
 
-          <input
-            type="text"
-            placeholder="Search by location"
-            value={searchLocation}
-            onChange={(e) => setSearchLocation(e.target.value)}
-          />
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Search by location"
+          value={searchLocation}
+          onChange={(e) => setSearchLocation(e.target.value)}
+        />
 
+        <div className="job-grid">
           {filteredJobs.map((job) => (
             <JobCard
               key={job._id}
+              id={job._id}
               title={job.title}
               category={job.category}
               wagePerDay={job.wagePerDay}
               location={job.location}
+              postedBy={job.postedBy}
+              currentUserId={JSON.parse(localStorage.getItem('user'))?.userId}
+              onDelete={handleDeleteJob}
+              onUpdate={handleUpdateJob}
             />
           ))}
-          {filteredJobs.map((job) => (
-  <JobCard
-    key={job._id}
-    id={job._id}
-    title={job.title}
-    category={job.category}
-    wagePerDay={job.wagePerDay}
-    location={job.location}
-    postedBy={job.postedBy}
-    currentUserId={JSON.parse(localStorage.getItem('user'))?.userId}
-    onUpdate={handleUpdateJob}
-    onDelete={handleDeleteJob}
-  />
-))}
         </div>
-      )}
-    </div>
-  );
+      </div>
+    )}
+  </div>
+);
 }
 
 export default App;

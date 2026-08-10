@@ -38,21 +38,24 @@ function JobCard({ id, title, category, wagePerDay, location, postedBy, currentU
   }
 
   return (
-    <div className="job-card">
-      <h3>Job Card</h3>
-      <h4>{title}</h4>
-      <h4>{category}</h4>
-      <h4>{location}</h4>
-      <p>₹{wagePerDay}/day</p>
-
-      {isOwner && (
-        <>
-          <button onClick={() => onDelete(id)}>Delete</button>
-          <button onClick={() => setIsEditing(true)}>Edit</button>
-        </>
-      )}
+  <div className="job-card">
+    <h3 className="job-title">{title}</h3>
+    <div className="job-meta">
+      <span>{category}</span>
+      <span>{location}</span>
     </div>
-  );
+    <div className="wage-tag">
+      ₹{wagePerDay}<span className="per-day">/day</span>
+    </div>
+
+    {isOwner && (
+      <div className="job-card-actions">
+        <button onClick={() => onDelete(id)}>Delete</button>
+        <button onClick={() => setIsEditing(true)}>Edit</button>
+      </div>
+    )}
+  </div>
+);
 }
 
 export default JobCard;

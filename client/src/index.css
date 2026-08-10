@@ -1,111 +1,336 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --bg: #16201A;
+  --bg-card: #1F2B22;
+  --bg-card-hover: #253328;
+  --gold: #E3A93B;
+  --gold-soft: #F0C878;
+  --rust: #A85C36;
+  --cream: #F3EEE1;
+  --sage: #8AA084;
+  --border: #33422F;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Work Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  background: var(--bg);
+  background-image:
+    linear-gradient(180deg, rgba(227,169,59,0.04), transparent 300px);
+  color: var(--cream);
+  font-family: var(--font-body);
 }
 
-#root {
-  width: 1126px;
-  max-width: 100%;
+.app {
+  max-width: 880px;
   margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  font-family: var(--font-display);
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin: 0 0 6px;
+  color: var(--cream);
+  letter-spacing: -0.01em;
+}
+
+.app-header .tagline {
+  font-size: 0.95rem;
+  color: var(--sage);
+  margin: 0 0 14px;
+}
+
+.app-header .underline {
+  width: 64px;
+  height: 3px;
+  background: var(--gold);
+  border-radius: 2px;
+}
+
+/* ---------- Auth (Login/Signup) ---------- */
+.auth-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 28px;
+  max-width: 380px;
+  margin: 0 auto;
+}
+
+.auth-card h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  margin: 0 0 20px;
+  color: var(--gold-soft);
+}
+
+.auth-switch {
   text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+  font-size: 0.9rem;
+  color: var(--sage);
+  margin-top: 16px;
+}
+
+.auth-switch button {
+  background: none;
+  border: none;
+  color: var(--gold);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: underline;
+  padding: 0;
+  font-size: 0.9rem;
+}
+
+.error-msg {
+  background: rgba(168,92,54,0.15);
+  border: 1px solid var(--rust);
+  color: var(--gold-soft);
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+}
+
+/* ---------- Form Inputs ---------- */
+input, select {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--cream);
+  padding: 11px 14px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  transition: border-color 0.15s ease;
+}
+
+input:focus, select:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+input::placeholder {
+  color: #5C6B57;
+}
+
+button[type="submit"], .btn-primary {
+  width: 100%;
+  background: var(--gold);
+  color: #1A1206;
+  border: none;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background 0.15s ease;
+}
+
+button[type="submit"]:hover, .btn-primary:hover {
+  background: var(--gold-soft);
+}
+
+/* ---------- Welcome bar ---------- */
+.welcome-bar {
   display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  padding: 14px 20px;
+  border-radius: 10px;
+  margin-bottom: 28px;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
+.welcome-bar p {
   margin: 0;
+  font-size: 0.95rem;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
+.welcome-bar .role-tag {
+  color: var(--gold);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--rust);
+  color: var(--gold-soft);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: var(--font-body);
+}
+
+.btn-logout:hover {
+  background: rgba(168,92,54,0.15);
+}
+
+/* ---------- Job Post Form ---------- */
+.job-form {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.job-form h3 {
+  font-family: var(--font-display);
+  margin: 0 0 16px;
+  color: var(--gold-soft);
+  font-size: 1.2rem;
+}
+
+/* ---------- Search ---------- */
+.search-input {
+  margin-bottom: 24px;
+}
+
+/* ---------- Job Grid ---------- */
+.job-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+}
+
+/* ---------- Job Card ---------- */
+.job-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.job-card:hover {
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.job-card .job-title {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: var(--cream);
+}
+
+.job-card .job-meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.job-card .job-meta span {
+  font-size: 0.78rem;
+  color: var(--sage);
+  border: 1px solid var(--border);
+  padding: 3px 9px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+/* Signature element: wage price-tag */
+.wage-tag {
   display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+  align-items: baseline;
+  gap: 3px;
+  background: var(--rust);
+  color: var(--gold-soft);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  padding: 6px 12px 6px 16px;
+  border-radius: 0 6px 6px 0;
+  position: relative;
+  font-size: 0.95rem;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.wage-tag::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  background: var(--rust);
+  border-radius: 50%;
+  clip-path: polygon(0 0, 50% 0, 100% 50%, 50% 100%, 0 100%);
+}
+
+.wage-tag .per-day {
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 0.72rem;
+  opacity: 0.85;
+}
+
+.job-card-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.job-card-actions button {
+  flex: 1;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--sage);
+  padding: 7px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-family: var(--font-body);
+}
+
+.job-card-actions button:first-child:hover {
+  border-color: var(--rust);
+  color: var(--gold-soft);
+}
+
+.job-card-actions button:last-child:hover {
+  border-color: var(--gold);
+  color: var(--gold-soft);
+}
+
+/* Edit mode inputs inside card */
+.job-card input {
+  margin-bottom: 8px;
+}
+
+.job-card-actions.editing button {
+  background: var(--gold);
+  color: #1A1206;
+  border: none;
+  font-weight: 600;
+}
+
+.job-card-actions.editing button:last-child {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--sage);
 }
