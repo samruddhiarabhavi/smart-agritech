@@ -9,6 +9,7 @@ function App() {
   const [searchLocation, setSearchLocation] = useState('');
   const [user, setUser] = useState(null);
   const [showSignup, setShowSignup] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   // Check if user already logged in (on page load/refresh)
   useEffect(() => {
@@ -20,7 +21,7 @@ function App() {
 
   useEffect(() => {
     async function fetchJobs() {
-      const response = await fetch('hhttps://smart-agritech.onrender.com/jobs');
+      const response = await fetch('https://smart-agritech.onrender.com/jobs');
       const data = await response.json();
       setJobs(data);
     }
@@ -77,8 +78,11 @@ function handleUpdateJob(jobId, updatedData) {
 }
 
   const filteredJobs = jobs.filter((job) =>
-    job.location.toLowerCase().includes(searchLocation.toLowerCase())
-  );
+   {
+  const matchesLocation = job.location.toLowerCase().includes(searchLocation.toLowerCase());
+  const matchesCategory = selectedCategory === 'all' || job.category === selectedCategory;
+  return matchesLocation && matchesCategory;
+});
 
 return (
   <div className="app">
@@ -118,13 +122,26 @@ return (
           <JobForm onJobAdded={handleJobAdded} />
         </div>
 
-        <input
-          className="search-input"
-          type="text"
-          placeholder="Search by location"
-          value={searchLocation}
-          onChange={(e) => setSearchLocation(e.target.value)}
-        />
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
+  <input
+    className="search-input"
+    style={{ marginBottom: 0, flex: 2 }}
+    type="text"
+    placeholder="Search by location"
+    value={searchLocation}
+    onChange={(e) => setSearchLocation(e.target.value)}
+  />
+  <select
+    style={{ flex: 1 }}
+    value={selectedCategory}
+    onChange={(e) => setSelectedCategory(e.target.value)}
+  >
+    <option value="all">All Categories</option>
+    <option value="farming">Farming</option>
+    <option value="construction">Construction</option>
+    <option value="household">Household</option>
+  </select>
+</div>
 
         <div className="job-grid">
           {filteredJobs.map((job) => (
