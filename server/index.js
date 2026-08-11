@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('./models/Users');
 const authMiddleware = require('./middleware/auth');
+const Application = require('./models/Application');
 
 const app = express();
 app.use(cors());
@@ -131,6 +132,67 @@ app.post("/login", async (req, res) => {
     res.json({ token, user: { name: user.name,  userId: user._id, email: user.email, role: user.role } });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+app.post("/jobs/:id/apply", authMiddleware, async (req, res) => {
+  try {
+    const existingApplication = await Application.findOne({
+      job: req.params.id,
+      applicant: req.user.userId,
+    });
+
+    if (existingApplication) {
+      return res.status(400).json({ error: "Already applied to this job" });
+    }
+
+    const application = await Application.create({
+      job: req.params.id,
+      applicant: req.user.userId,
+    });
+
+    res.status(201).json(application);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+app.get("/jobs/:id/applications", authMiddleware, async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+
+    if (!job) {
+      return res.status(404).json({ error: "Job not found" });
+    }
+
+    if (job.postedBy.toString() !== req.user.userId) {
+      return res.status(403).json({ error: "Not authorized to view applications" });
+    }
+
+    const applications = await Application.find({ job: req.params.id })
+      .populate('applicant', 'name email');
+
+    res.json(applications);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+app.put("/applications/:id", authMiddleware, async (req, res) => {
+  try {
+    const application = await Application.findById(req.params.id).populate('job');
+
+    if (!application) {
+      return res.status(404).json({ error: "Application not found" });
+    }
+
+    if (application.job.postedBy.toString() !== req.user.userId) {
+      return res.status(403).json({ error: "Not authorized" });
+    }
+
+    application.status = req.body.status;
+    await application.save();
+
+    res.json(application);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
   }
 });
 
