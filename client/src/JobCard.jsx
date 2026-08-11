@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function JobCard({ id, title, category, wagePerDay, location, postedBy, currentUserId, onDelete, onUpdate }) {
+function JobCard({ id, title, category, wagePerDay, location, postedBy, currentUserId, onDelete, onUpdate, averageWage }) {
   const isOwner = postedBy === currentUserId;
   const [isEditing, setIsEditing] = useState(false);
 
@@ -18,6 +18,21 @@ function JobCard({ id, title, category, wagePerDay, location, postedBy, currentU
     });
     setIsEditing(false);
   }
+  function getWageComparison() {
+    if (!averageWage) return null;
+    const diff = wagePerDay - averageWage;
+    const percentDiff = Math.round((diff / averageWage) * 100);
+
+    if (percentDiff >= 10) {
+      return { label: `${percentDiff}% above average`, color: '#4A6741' };
+    } else if (percentDiff <= -10) {
+      return { label: `${Math.abs(percentDiff)}% below average`, color: '#A85C36' };
+    } else {
+      return { label: 'Fair wage', color: '#8AA084' };
+    }
+  }
+
+  const comparison = getWageComparison();
 
   if (isEditing) {
     return (
@@ -47,6 +62,11 @@ function JobCard({ id, title, category, wagePerDay, location, postedBy, currentU
     <div className="wage-tag">
       ₹{wagePerDay}<span className="per-day">/day</span>
     </div>
+    {comparison && (
+        <p style={{ fontSize: '0.75rem', color: comparison.color, marginTop: '6px', fontWeight: 600 }}>
+          {comparison.label} (avg ₹{averageWage}/day)
+        </p>
+      )}
 
     {isOwner && (
       <div className="job-card-actions">

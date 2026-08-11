@@ -83,6 +83,13 @@ function handleUpdateJob(jobId, updatedData) {
   const matchesCategory = selectedCategory === 'all' || job.category === selectedCategory;
   return matchesLocation && matchesCategory;
 });
+function getAverageWage(category) {
+  const categoryJobs = jobs.filter((job) => job.category === category);
+  if (categoryJobs.length === 0) return 0;
+  
+  const total = categoryJobs.reduce((sum, job) => sum + job.wagePerDay, 0);
+  return Math.round(total / categoryJobs.length);
+}
 
 return (
   <div className="app">
@@ -156,6 +163,7 @@ return (
               currentUserId={JSON.parse(localStorage.getItem('user'))?.userId}
               onDelete={handleDeleteJob}
               onUpdate={handleUpdateJob}
+              averageWage={getAverageWage(job.category)}
             />
           ))}
         </div>
