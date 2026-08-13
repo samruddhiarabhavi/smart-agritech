@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function JobCard({  id, title, category, wagePerDay, location, postedBy, currentUserId, currentUserRole, onDelete, onUpdate, averageWage, onApply }) {
+function JobCard({  id, title, category, wagePerDay, location, postedBy, currentUserId, currentUserRole, onDelete, onUpdate, averageWage, onApply, onFetchApplications, onUpdateStatus }) {
   const isOwner = postedBy === currentUserId;
   
   const [isEditing, setIsEditing] = useState(false);
@@ -9,6 +9,8 @@ function JobCard({  id, title, category, wagePerDay, location, postedBy, current
   const [editCategory, setEditCategory] = useState(category);
   const [editWage, setEditWage] = useState(wagePerDay);
   const [editLocation, setEditLocation] = useState(location);
+    const [showApplicants, setShowApplicants] = useState(false);
+  const [applicants, setApplicants] = useState([]);
 
   function handleSave() {
     onUpdate(id, {
@@ -22,6 +24,19 @@ function JobCard({  id, title, category, wagePerDay, location, postedBy, current
    async function handleApply() {
     const success = await onApply(id);
     if (success) setApplied(true);
+  }
+    async function handleViewApplicants() {
+    if (!showApplicants) {
+      const data = await onFetchApplications(id);
+      setApplicants(data);
+    }
+    setShowApplicants(!showApplicants);
+  }
+
+  async function handleStatusChange(applicationId, newStatus) {
+    await onUpdateStatus(applicationId, newStatus);
+    const updated = await onFetchApplications(id);
+    setApplicants(updated);
   }
 
   function getWageComparison() {
@@ -80,6 +95,28 @@ function JobCard({  id, title, category, wagePerDay, location, postedBy, current
         <button onClick={() => setIsEditing(true)}>Edit</button>
       </div>
     )}
+    {showApplicants && (
+        <div style={{ marginTop: '14px', borderTop: '1px solid var(--border)', paddingTop: '14px' }}>
+          {applicants.length === 0 ? (
+            <p style={{ fontSize: '0.85rem', color: 'var(--sage)' }}>No applicants yet</p>
+          ) : (
+            applicants.map((app) => (
+              <div key={app._id} style={{ marginBottom: '10px', fontSize: '0.85rem' }}>
+                <p style={{ margin: '0 0 4px' }}>
+                  {app.applicant.name} ({app.applicant.email}) — <strong>{app.status}</strong>
+                </p>
+                {app.status === 'pending' && (
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button onClick={() => handleStatusChange(app._id, 'accepted')}>Accept</button>
+                    <button onClick={() => handleStatusChange(app._id, 'rejected')}>Reject</button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+
     {!isOwner && currentUserRole === 'worker' && (
         <div className="job-card-actions">
           <button onClick={handleApply} disabled={applied}>

@@ -114,6 +114,37 @@ async function handleApplyToJob(jobId) {
     return false;
   }
 }
+async function handleFetchApplications(jobId) {
+  const token = localStorage.getItem('token');
+
+  try {
+    const response = await fetch(`https://smart-agritech.onrender.com/jobs/${jobId}/applications`, {
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}
+
+async function handleUpdateApplicationStatus(applicationId, newStatus) {
+  const token = localStorage.getItem('token');
+
+  try {
+    await fetch(`https://smart-agritech.onrender.com/applications/${applicationId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify({ status: newStatus }),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
 
 return (
   <div className="app">
@@ -190,6 +221,8 @@ return (
               averageWage={getAverageWage(job.category)}
               onApply={handleApplyToJob}
               currentUserRole={user.role}
+              onFetchApplications={handleFetchApplications}
+              onUpdateStatus={handleUpdateApplicationStatus}
             />
           ))}
         </div>
