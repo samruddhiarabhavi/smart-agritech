@@ -1,9 +1,10 @@
 import { useState } from 'react';
 
-function JobCard({ id, title, category, wagePerDay, location, postedBy, currentUserId, onDelete, onUpdate, averageWage }) {
+function JobCard({  id, title, category, wagePerDay, location, postedBy, currentUserId, currentUserRole, onDelete, onUpdate, averageWage, onApply }) {
   const isOwner = postedBy === currentUserId;
+  
   const [isEditing, setIsEditing] = useState(false);
-
+  const [applied, setApplied] = useState(false);
   const [editTitle, setEditTitle] = useState(title);
   const [editCategory, setEditCategory] = useState(category);
   const [editWage, setEditWage] = useState(wagePerDay);
@@ -18,6 +19,11 @@ function JobCard({ id, title, category, wagePerDay, location, postedBy, currentU
     });
     setIsEditing(false);
   }
+   async function handleApply() {
+    const success = await onApply(id);
+    if (success) setApplied(true);
+  }
+
   function getWageComparison() {
     if (!averageWage) return null;
     const diff = wagePerDay - averageWage;
@@ -74,6 +80,13 @@ function JobCard({ id, title, category, wagePerDay, location, postedBy, currentU
         <button onClick={() => setIsEditing(true)}>Edit</button>
       </div>
     )}
+    {!isOwner && currentUserRole === 'worker' && (
+        <div className="job-card-actions">
+          <button onClick={handleApply} disabled={applied}>
+            {applied ? 'Applied ✓' : 'Apply'}
+          </button>
+        </div>
+      )}
   </div>
 );
 }

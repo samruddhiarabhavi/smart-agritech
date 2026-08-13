@@ -90,6 +90,30 @@ function getAverageWage(category) {
   const total = categoryJobs.reduce((sum, job) => sum + job.wagePerDay, 0);
   return Math.round(total / categoryJobs.length);
 }
+async function handleApplyToJob(jobId) {
+  const token = localStorage.getItem('token');
+
+  try {
+    const response = await fetch(`https://smart-agritech.onrender.com/jobs/${jobId}/apply`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      alert(data.error || 'Failed to apply');
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+}
 
 return (
   <div className="app">
@@ -164,6 +188,8 @@ return (
               onDelete={handleDeleteJob}
               onUpdate={handleUpdateJob}
               averageWage={getAverageWage(job.category)}
+              onApply={handleApplyToJob}
+              currentUserRole={user.role}
             />
           ))}
         </div>
