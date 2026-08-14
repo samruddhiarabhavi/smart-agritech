@@ -109,6 +109,9 @@ function JobCard({  id, title, category, wagePerDay, location, postedBy, current
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button onClick={() => handleStatusChange(app._id, 'accepted')}>Accept</button>
                     <button onClick={() => handleStatusChange(app._id, 'rejected')}>Reject</button>
+                    <button onClick={handleViewApplicants}>
+      {showApplicants ? 'Hide' : 'View'} Applicants
+    </button>
                   </div>
                 )}
               </div>

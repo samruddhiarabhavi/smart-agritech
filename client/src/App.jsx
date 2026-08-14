@@ -44,7 +44,7 @@ function App() {
 function handleUpdateJob(jobId, updatedData) {
   const token = localStorage.getItem('token');
 
-  fetch(`https://smart-agritech.onrender.com/${jobId}`, {
+  fetch(`https://smart-agritech.onrender.com/jobs/${jobId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
