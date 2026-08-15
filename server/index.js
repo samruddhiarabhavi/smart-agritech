@@ -195,6 +195,16 @@ app.put("/applications/:id", authMiddleware, async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 });
+app.get("/my-applications", authMiddleware, async (req, res) => {
+  try {
+    const applications = await Application.find({ applicant: req.user.userId })
+      .populate('job', 'title category wagePerDay location');
+
+    res.json(applications);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

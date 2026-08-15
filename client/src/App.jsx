@@ -10,6 +10,8 @@ function App() {
   const [user, setUser] = useState(null);
   const [showSignup, setShowSignup] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [myApplications, setMyApplications] = useState([]);
+  const [showMyApplications, setShowMyApplications] = useState(false);
 
   // Check if user already logged in (on page load/refresh)
   useEffect(() => {
@@ -59,6 +61,21 @@ function handleUpdateJob(jobId, updatedData) {
       );
     })
     .catch((err) => console.log(err));
+}
+async function handleViewMyApplications() {
+  if (!showMyApplications) {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch('https://smart-agritech.onrender.com/my-applications', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setMyApplications(data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  setShowMyApplications(!showMyApplications);
 }
 
   function handleDeleteJob(jobId) {
@@ -178,6 +195,47 @@ return (
           <p>Welcome, {user.name} <span className="role-tag">{user.role}</span></p>
           <button className="btn-logout" onClick={handleLogout}>Logout</button>
         </div>
+        {user.role === 'worker' && (
+  <div style={{ marginBottom: '24px' }}>
+    <button className="btn-primary" onClick={handleViewMyApplications} style={{ width: 'auto', padding: '10px 20px' }}>
+      {showMyApplications ? 'Hide' : 'View'} My Applications
+    </button>
+
+    {showMyApplications && (
+      <div className="auth-card" style={{ marginTop: '14px', maxWidth: 'none' }}>
+        {myApplications.length === 0 ? (
+          <p style={{ color: 'var(--sage)' }}>You haven't applied to any jobs yet</p>
+        ) : (
+          myApplications.map((app) => (
+            <div key={app._id} style={{ 
+              display: 'flex', 
+              justifyContent: 'space-between', 
+              alignItems: 'center',
+              padding: '10px 0', 
+              borderBottom: '1px solid var(--border)' 
+            }}>
+              <div>
+                <p style={{ margin: 0, fontWeight: 600 }}>{app.job.title}</p>
+                <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--sage)' }}>
+                  {app.job.category} • {app.job.location} • ₹{app.job.wagePerDay}/day
+                </p>
+              </div>
+              <span style={{ 
+                fontFamily: 'var(--font-mono)', 
+                fontSize: '0.8rem',
+                fontWeight: 600,
+                color: app.status === 'accepted' ? '#4A6741' : app.status === 'rejected' ? '#A85C36' : '#E3A93B',
+                textTransform: 'uppercase'
+              }}>
+                {app.status}
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+    )}
+  </div>
+)}
 
         <div className="job-form">
           <h3>Post a Job</h3>
