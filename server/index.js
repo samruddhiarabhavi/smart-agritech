@@ -205,6 +205,30 @@ app.get("/my-applications", authMiddleware, async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+app.get("/profile", authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    let stats = {};
+
+    if (user.role === 'provider') {
+      const jobsPosted = await Job.countDocuments({ postedBy: user._id });
+      stats = { jobsPosted };
+    } else {
+      const applicationsSent = await Application.countDocuments({ applicant: user._id });
+      const accepted = await Application.countDocuments({ applicant: user._id, status: 'accepted' });
+      stats = { applicationsSent, accepted };
+    }
+
+    res.json({ user, stats });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

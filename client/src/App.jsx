@@ -12,6 +12,8 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [myApplications, setMyApplications] = useState([]);
   const [showMyApplications, setShowMyApplications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+  const [profileData, setProfileData] = useState(null);
 
   // Check if user already logged in (on page load/refresh)
   useEffect(() => {
@@ -76,6 +78,21 @@ async function handleViewMyApplications() {
     }
   }
   setShowMyApplications(!showMyApplications);
+}
+async function handleViewProfile() {
+  if (!showProfile) {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch('https://smart-agritech.onrender.com/profile', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      const data = await response.json();
+      setProfileData(data);
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  setShowProfile(!showProfile);
 }
 
   function handleDeleteJob(jobId) {
@@ -192,9 +209,38 @@ return (
     ) : (
       <div>
         <div className="welcome-bar">
-          <p>Welcome, {user.name} <span className="role-tag">{user.role}</span></p>
-          <button className="btn-logout" onClick={handleLogout}>Logout</button>
-        </div>
+  <p>Welcome, {user.name} <span className="role-tag">{user.role}</span></p>
+  <div style={{ display: 'flex', gap: '10px' }}>
+    <button className="btn-logout" onClick={handleViewProfile}>
+      {showProfile ? 'Hide' : 'View'} Profile
+    </button>
+    <button className="btn-logout" onClick={handleLogout}>Logout</button>
+  </div>
+</div>
+
+{showProfile && profileData && (
+  <div className="auth-card" style={{ maxWidth: 'none', marginBottom: '24px' }}>
+    <h2>My Profile</h2>
+    <p><strong>Name:</strong> {profileData.user.name}</p>
+    <p><strong>Email:</strong> {profileData.user.email}</p>
+    <p><strong>Role:</strong> {profileData.user.role}</p>
+
+    {profileData.user.role === 'provider' ? (
+      <p style={{ color: 'var(--gold)', fontFamily: 'var(--font-mono)' }}>
+        Jobs Posted: {profileData.stats.jobsPosted}
+      </p>
+    ) : (
+      <>
+        <p style={{ color: 'var(--gold)', fontFamily: 'var(--font-mono)' }}>
+          Applications Sent: {profileData.stats.applicationsSent}
+        </p>
+        <p style={{ color: '#4A6741', fontFamily: 'var(--font-mono)' }}>
+          Accepted: {profileData.stats.accepted}
+        </p>
+      </>
+    )}
+  </div>
+)}
         {user.role === 'worker' && (
   <div style={{ marginBottom: '24px' }}>
     <button className="btn-primary" onClick={handleViewMyApplications} style={{ width: 'auto', padding: '10px 20px' }}>
